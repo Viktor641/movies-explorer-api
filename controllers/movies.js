@@ -30,11 +30,13 @@ const deleteMovie = (req, res, next) => {
 
   Movie.findById(movieId)
     .orFail(new NotFoundError('Передан несуществующий _id фильма.'))
+    // eslint-disable-next-line consistent-return
     .then((movie) => {
       if (movie.owner.toString() === req.user._id) {
-        Movie.findByIdAndRemove(movieId).then(() => res.status(200).send(movie));
-      } else {
-        next(new ForbiddenError('Нельзя удалять чужие фильмы'));
+        return Movie.findByIdAndRemove(movieId).then(() => res.status(200).send(movie));
+      }
+      if (movie.owner.toString() !== req.user._id) {
+        return next(new ForbiddenError('Нельзя удалять чужие фильмы'));
       }
     })
     .catch(next);

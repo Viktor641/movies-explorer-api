@@ -7,8 +7,13 @@ const {
   login,
 } = require('../controllers/users');
 
-router.use('/signin', login);
-router.use('/signup', createUser);
+const {
+  validationCreateUser,
+  validationLogin,
+} = require('../middlewares/validation');
+
+router.use('/signin', validationLogin, login);
+router.use('/signup', validationCreateUser, createUser);
 
 router.use(auth);
 
